@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import EntryList from '../../components/content/EntryList.astro';
+import PageHeader from '../../components/content/PageHeader.astro';
+import { getLocalizedEntries, slugTerm, uniqueTerms } from '../../lib/content/entries';
+import { useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const posts = await getLocalizedEntries('posts', 'en');
+  return uniqueTerms(posts, 'tags').map((term) => ({ params: { tag: term.slug }, props: { term, posts: posts.filter((entry) => entry.data.tags?.some((tag) => slugTerm(tag) === term.slug)) } }));
+}
+
+const { term, posts } = Astro.props;
+const t = useTranslations('en');
+---
+
+<BaseLayout title={`${t('taxonomy.tagPrefix')}: ${term.name}`} locale="en">
+  <PageHeader title={`${t('taxonomy.tagPrefix')}: ${term.name}`} description={`${term.count} ${t('taxonomy.count')}`} locale="en" />
+  <EntryList entries={posts} collection="posts" locale="en" />
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import { getLocalePath, type Locale } from '../../config/i18n';
+
+interface Term {
+  name: string;
+  slug: string;
+  count: number;
+}
+
+interface Props {
+  terms: Term[];
+  locale: Locale;
+}
+
+const { terms, locale } = Astro.props;
+---
+
+<div class="flex flex-wrap gap-3">
+  {terms.map((term) => (
+    <a href={getLocalePath(locale, `/tags/${term.slug}/`)} class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm hover:border-primary hover:text-primary">
+      <span>{term.name}</span>
+      <span class="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{term.count}</span>
+    </a>
+  ))}
+</div>

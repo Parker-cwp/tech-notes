@@ -1,0 +1,52 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getLocalePath, type Locale } from '../../config/i18n';
+import { formatDate, slugTerm } from '../../lib/content/entries';
+
+interface Props {
+  title: string;
+  description?: string;
+  date?: Date;
+  locale: Locale;
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  date,
+  locale,
+  tags = []
+} = Astro.props;
+
+const hasTaxonomy = tags.length > 0;
+---
+
+<header class="mb-10">
+  <h1 class="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{title}</h1>
+  {description && <p class="mt-4 text-lg leading-relaxed text-muted-foreground">{description}</p>}
+
+  <div class="surface-panel mt-6 p-5 text-sm">
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-muted-foreground">
+      {date && date.getTime() > 0 && (
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="lucide:calendar" class="h-4 w-4" />
+          <time datetime={date.toISOString()}>{formatDate(date, locale)}</time>
+        </span>
+      )}
+    </div>
+
+    {hasTaxonomy && (
+      <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4 text-sm">
+        {tags.map((tag) => (
+          <a
+            href={getLocalePath(locale, `/tags/${slugTerm(tag)}/`)}
+            class="rounded-full bg-muted px-3 py-1 text-muted-foreground transition-colors hover:text-primary"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</header>
