@@ -6,7 +6,7 @@ import { getLocalePath } from '../config/i18n';
 import { siteConfig } from '../config/site';
 import { getLocalizedEntries } from '../lib/content/entries';
 
-const locale = 'en';
+const locale = 'zh-cn';
 const sections = await Promise.all(Object.entries(contentTypes)
   .filter(([, config]) => config.home?.enabled)
   .map(async ([id, config]) => {

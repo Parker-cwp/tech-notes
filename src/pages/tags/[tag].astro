@@ -6,12 +6,12 @@ import { getLocalizedEntries, slugTerm, uniqueTerms } from '../../lib/content/en
 import { useTranslations } from '../../i18n/utils';
 
 export async function getStaticPaths() {
-  const posts = await getLocalizedEntries('posts', 'en');
+  const posts = await getLocalizedEntries('posts', 'zh-cn');
   return uniqueTerms(posts, 'tags').map((term) => ({ params: { tag: term.slug }, props: { term, posts: posts.filter((entry) => entry.data.tags?.some((tag) => slugTerm(tag) === term.slug)) } }));
 }
 
 const { term, posts } = Astro.props;
-const t = useTranslations('en');
+const t = useTranslations('zh-cn');
 ---
 
 <BaseLayout title={`${t('taxonomy.tagPrefix')}: ${term.name}`} locale="en">

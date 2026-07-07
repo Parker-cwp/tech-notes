@@ -5,7 +5,7 @@ import ArchiveTimeline from '../../components/content/ArchiveTimeline.astro';
 import { getLocalizedEntries } from '../../lib/content/entries';
 import { useTranslations } from '../../i18n/utils';
 
-const locale = 'en';
+const locale = 'zh-cn';
 const posts = await getLocalizedEntries('posts', locale);
 const t = useTranslations(locale);
 ---

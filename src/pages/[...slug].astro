@@ -5,7 +5,7 @@ import PageHeader from '../components/content/PageHeader.astro';
 import { getLocalizedEntries, entrySlug } from '../lib/content/entries';
 
 export async function getStaticPaths() {
-  const pages = await getLocalizedEntries('pages', 'en');
+  const pages = await getLocalizedEntries('pages', 'zh-cn');
   return pages.map((entry) => ({ params: { slug: entrySlug(entry as any) }, props: { entry } }));
 }
 

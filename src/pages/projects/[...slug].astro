@@ -6,7 +6,7 @@ import ProjectLinks from '../../components/content/ProjectLinks.astro';
 import { getLocalizedEntries, entrySlug } from '../../lib/content/entries';
 
 export async function getStaticPaths() {
-  const projects = await getLocalizedEntries('projects', 'en');
+  const projects = await getLocalizedEntries('projects', 'zh-cn');
   return projects.map((entry) => ({ params: { slug: entrySlug(entry as any) }, props: { entry } }));
 }
 

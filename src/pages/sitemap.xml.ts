@@ -26,8 +26,8 @@ export async function GET({ site, url }: { site?: URL; url: URL }) {
   const projectPaths = projects.map((entry) => localizedEntryPath('projects', entry as any));
   const pagePaths = pages.map((entry) => localizedEntryPath('pages', entry as any));
   const taxonomyPaths = locales.flatMap((locale) => {
-    const localizedPosts = posts.filter((entry) => localizedEntryPath('posts', entry as any).startsWith(locale === 'en' ? '/posts/' : `/${locale}/posts/`)) as any;
-    const prefix = locale === 'en' ? '' : `/${locale}`;
+    const localizedPosts = posts.filter((entry) => localizedEntryPath('posts', entry as any).startsWith(locale === 'zh-cn' ? '/posts/' : `/${locale}/posts/`)) as any;
+    const prefix = locale === 'zh-cn' ? '' : `/${locale}`;
     return uniqueTerms(localizedPosts, 'tags').map((term) => `${prefix}/tags/${term.slug}/`);
   });
 
