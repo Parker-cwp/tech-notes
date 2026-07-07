@@ -31,9 +31,6 @@ jobs:
             echo "ASTRO_BASE=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
           fi
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
       - name: Build and upload
         uses: withastro/action@v6
         with:
