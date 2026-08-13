@@ -2,6 +2,7 @@
 title: "Cube 语义层实战：AI 查数场景、技术要点与方案对比"
 description: "深入介绍 Cube 语义层在 AI Agent 查数场景中的架构设计、技术原理、落地路径，以及与 dbt、LookML、Text-to-SQL 等方案的优劣对比。"
 pubDate: 2026-08-12
+updatedDate: 2026-08-13
 tags: ["Cube", "语义层", "AI", "数据分析", "Agent"]
 toc: "side"
 mermaid: true
@@ -158,6 +159,42 @@ Cube 的模型是 **Code-first**，用 YAML 或 JavaScript 定义，纳入 Git �
 | --- | --- |
 | **Cube** | 业务实体（订单、用户等），定义 measures、dimensions、joins |
 | **View** | 面向消费方的 curated 数据集，人类和 Agent 主要查 View |
+
+### Metric 与 Dimension：先分清两个基本概念
+
+读 Cube 模型和 Agent Plan 时，最容易混的是 **metric（指标 / measure）** 和 **dimension（维度）**。可以简单记：
+
+| | **Metric（指标 / Measure）** | **Dimension（维度）** |
+| --- | --- | --- |
+| 回答的问题 | **算什么、算多少** | **按什么切开、按什么筛选** |
+| 常见类型 | 计数、求和、平均、比率 | 类别、状态、地区、时间 |
+| SQL 直觉 | `COUNT` / `SUM` / `AVG` … | `GROUP BY` / `WHERE` 里的字段 |
+| Cube 字段 | `measures` | `dimensions`（时间常单独放在 `timeDimensions`） |
+| 问句线索 | 「多少、总共、平均、占比」 | 「按地区、按状态、上个月、APAC」 |
+
+**Metric** 是对一批数据做聚合后得到的数，例如：
+
+- `orders.count` → 订单数
+- `orders.total_revenue` → 收入合计
+- `orders.avg_order_value` → 客单价
+
+**Dimension** 用来描述、分组、过滤，一般不直接「加总成一个业务 KPI」，而是规定从哪个角度看指标，例如：
+
+- `orders.status` → 已支付 / 已取消
+- `orders.region` → APAC / EU
+- `orders.channel` → App / Web
+- `orders.created_at` → 时间（常称为 time dimension）
+
+两者合在一起才是一条完整查数 Plan：
+
+```text
+查什么数？     → metrics:    total_revenue
+怎么切开看？   → dimensions: region, status
+限定哪一段？   → filters / time: APAC, 上个月, 按天
+```
+
+> [!NOTE]
+> 权限目录里两者都要管：无权 metric 不能算；敏感 dimension（如客户邮箱、销售负责人）不该出现在分组或过滤里。OpenFGA 侧的对象级授权，见 [OpenFGA 学习指南](../openfga-authorization-for-ai-analytics/)。
 
 示例模型：
 
