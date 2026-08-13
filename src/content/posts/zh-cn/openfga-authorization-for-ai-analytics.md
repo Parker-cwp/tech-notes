@@ -2,6 +2,7 @@
 title: "OpenFGA 学习指南：AI 查数场景中的细粒度权限"
 description: "系统介绍 OpenFGA 的 ReBAC 模型、授权 Schema、权限投影与 Agent Plan 的关系，以及和 OPA、SpiceDB、Cube securityContext 等方案的对比。"
 pubDate: 2026-08-13
+updatedDate: 2026-08-13
 tags: ["OpenFGA", "权限", "AI", "Agent", "数据分析"]
 toc: "side"
 mermaid: true
@@ -464,6 +465,37 @@ cube.load(plan, security_context={"tenant_id": tenant_id})
 | 执行时改写 SQL | 行级百万 / 亿级 | Cube 租户过滤：**必做** |
 
 `ListObjects` 适合大约千级的小集合。指标、View、工具正好是这个量级；订单行不是。
+
+落地时还有一步常被忽略：权限投影要和 **Cube Meta** 取交集。
+
+```text
+Agent 的 catalog
+  = OpenFGA 投影出的允许对象
+  ∩ Cube Meta 里真实存在的成员
+```
+
+- 只信 OpenFGA：可能授权了已删、不存在的 metric
+- 只信 Cube Meta：会把无权指标塞进 Prompt / Plan
+
+所以：**存在性看 Cube，权限看 OpenFGA，Agent 只看交集。** 两边还要做命名对齐（如 `metric:orders.total_revenue` ↔ `orders.total_revenue`）。
+
+## Metric 与 Dimension 分别是什么？
+
+谈「目录里有哪些积木」之前，先分清两个词。它们来自语义层（Cube 里对应 `measures` / `dimensions`），也是 OpenFGA 里最常投影的两类对象：
+
+| | **Metric（指标 / Measure）** | **Dimension（维度）** |
+| --- | --- | --- |
+| 回答的问题 | **算什么、算多少** | **按什么切开、按什么筛选** |
+| 例子 | `orders.count`、`orders.total_revenue` | `orders.region`、`orders.status`、`orders.created_at` |
+| 问句线索 | 「多少、总共、平均、占比」 | 「按地区、按状态、上个月、APAC」 |
+| 在 Plan 里 | `measures` | `dimensions` / `filters` / `timeDimensions` |
+
+一句话：
+
+- **Metric** = 要算的数（多少钱、多少单）
+- **Dimension** = 从哪个角度切、筛这个数（哪里、什么状态、哪天）
+
+权限上两者都要管：无权 metric 不能进 catalog；敏感 dimension（如 `customer_email`）也不该暴露给 Agent。更完整的语义层说明见 [Cube 语义层实战](../cube-semantic-layer-for-ai-analytics/)。
 
 ## 目录限制会不会让 Plan 不够细？
 
