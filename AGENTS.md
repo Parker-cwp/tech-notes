@@ -145,6 +145,15 @@ ASTRO_BASE=/astro-narrow/ pnpm build
 - RSS、sitemap、search index 是否仍能生成。
 - 静态资源路径是否没有绕过 `BASE_URL`。
 
+## Cursor Cloud specific instructions
+
+Cloud agents install the AnySearch skill during environment `install` via `.cursor/install-cloud-skills.sh`.
+
+- Skill path: `~/.agents/skills/anysearch` (mirrored to `~/.cursor/skills/anysearch`)
+- Runtime command: `python3 ~/.agents/skills/anysearch/scripts/anysearch_cli.py`
+- Optional secret: `ANYSEARCH_API_KEY` in Cloud Agent Secrets. Without it, anonymous access is used with lower rate limits.
+- If `runtime.conf` is missing, recreate it with Python 3 as the runtime. Do not run `doc` on every search after the file exists.
+
 ## 维护原则
 
 - Astro Native 优先。
